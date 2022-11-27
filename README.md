@@ -50,7 +50,7 @@
 
 - Check for dependency updates (just in case)
 
-  - ```sh
+  ```sh
     sbt dependencyUpdates
     ```
 ### Swagger-UI
