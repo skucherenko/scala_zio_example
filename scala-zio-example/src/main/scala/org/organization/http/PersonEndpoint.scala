@@ -1,36 +1,25 @@
 package org.organization.http
 
-import org.organization.db.model._
+import org.organization.db.model.Person
 import org.organization.db.repository.PersonRepository
+import org.organization.AppEnv.AppEnv
 import sttp.tapir._
 import io.circe.generic.auto._
 import sttp.tapir.generic.auto._
 import sttp.tapir.json.circe._
-import sttp.tapir.server.metrics.prometheus.PrometheusMetrics
-import sttp.tapir.swagger.bundle.SwaggerInterpreter
-import sttp.tapir.ztapir.ZServerEndpoint
-import zio.{Task}
+import sttp.tapir.ztapir.ZTapir
 
-object PersonEndpoint extends PersonRepository{
+object PersonEndpoint extends PersonRepository with ZTapir {
 
-  val personListing: PublicEndpoint[Unit, Unit, List[Person], Any] = endpoint
-    .name("Default-endpoint")
-    .description("Get all persons from database")
-    .get
-    .in("person" / "list" / "all")
-    .out(jsonBody[List[Person]])
+  val personListing: PublicEndpoint[Unit, Unit, List[Person], Any] =
+    endpoint.get
+      .name("Default-endpoint")
+      .description("Get all persons from database")
+      .in("person" / "list" / "all")
+      .out(jsonBody[List[Person]])
 
-  val personListingServerEndpoint: ZServerEndpoint[Any, Any] =
-    personListing.serverLogicSuccess(_ => getAllPersons)
+  // TODO: Provide error body, not just Unit
+  val personListingServerLogic: ZServerEndpoint[AppEnv, Any] =
+    personListing.zServerLogic(_ => getAllPersons.mapError(_ => ()))
 
-  val apiEndpoints: List[ZServerEndpoint[Any, Any]] =
-    List(personListingServerEndpoint)
-
-  val docEndpoints: List[ZServerEndpoint[Any, Any]] = SwaggerInterpreter()
-    .fromServerEndpoints[Task](apiEndpoints, "scala zio example", "1.0.0")
-
-  val prometheusMetrics: PrometheusMetrics[Task] = PrometheusMetrics.default[Task]()
-  val metricsEndpoint: ZServerEndpoint[Any, Any] = prometheusMetrics.metricsEndpoint
-
-  val all: List[ZServerEndpoint[Any, Any]] = apiEndpoints ++ docEndpoints ++ List(metricsEndpoint)
 }

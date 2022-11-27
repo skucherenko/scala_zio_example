@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS person
 (
-    name      varchar(255),
+    name       varchar(255),
     birth_date DATETIME NOT NULL,
     PRIMARY KEY (name)
 );

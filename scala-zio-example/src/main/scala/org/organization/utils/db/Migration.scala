@@ -1,24 +1,24 @@
 package org.organization.utils.db
 
-import org.organization.db.DbContext.ctx
+import org.organization.AppEnv.AppIO
 import org.flywaydb.core.Flyway
-import org.flywaydb.core.api.output.MigrateResult
-import org.slf4j.{Logger, LoggerFactory}
-import zio.ZIO
+import zio._
+import javax.sql.DataSource
 
 object Migration {
+  def migrate: AppIO[Unit] = for {
+    ds <- ZIO.service[DataSource]
+    _  <- ZIO.effectTotal(println("Start migrating the database"))
 
-  val log: Logger = LoggerFactory.getLogger(Migration.getClass.getName)
+    _ <- ZIO.effect(
+      Flyway.configure
+        .locations("db/migration")
+        .dataSource(ds)
+        .baselineOnMigrate(true)
+        .load
+        .migrate()
+    )
 
-  lazy val flyway: Flyway = Flyway.configure
-    .locations("db/migration")
-    .dataSource(ctx.dataSource)
-    .baselineOnMigrate(true)
-    .load
-
-  def migrate: ZIO[Any, Throwable, MigrateResult] = for {
-    _ <- ZIO.attempt(log.info("Start migrating the database"))
-    res <- ZIO.attempt(flyway.migrate())
-    _ <- ZIO.attempt(log.info("Migration the database finished successfully"))
-  } yield res
+    _ <- ZIO.effectTotal(println("Migration successful"))
+  } yield ()
 }

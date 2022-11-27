@@ -1,13 +1,12 @@
 package org.organization.db
 
 import org.organization.db.model.Person
-import io.getquill.{MysqlJdbcContext, SnakeCase}
+import io.getquill.{MysqlZioJdbcContext, SnakeCase}
 
-case object DbContext {
-  lazy val ctx = new MysqlJdbcContext(SnakeCase, "mysql")
+object DbContext {
+  lazy val ctx = new MysqlZioJdbcContext(SnakeCase)
 
-  import ctx._
-  val persons = quote {
-    querySchema[Person]("person")
+  val persons = ctx.quote {
+    ctx.querySchema[Person]("person")
   }
 }

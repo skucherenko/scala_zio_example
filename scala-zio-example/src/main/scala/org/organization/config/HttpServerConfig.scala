@@ -1,20 +1,15 @@
 package org.organization.config
 
-import zio._
-import zio.config._
-import zio.config.magnolia.descriptor
-import zio.config.typesafe.TypesafeConfigSource
+import pureconfig._
+import pureconfig.error.ConfigReaderFailures
+import pureconfig.generic.auto._
+import zio.{Has, ZLayer, ZIO}
 
-case class HttpServerConfig(host: String, port: Int)
+final case class HttpServerConfig(host: String, port: Int)
 
 object HttpServerConfig {
-  val layer: ZLayer[Any, ReadError[String], HttpServerConfig] =
-    ZLayer {
-      read {
-        descriptor[HttpServerConfig].from(
-          TypesafeConfigSource.fromResourcePath
-            .at(PropertyTreePath.$("HttpServer"))
-        )
-      }
-    }
+  val layer: ZLayer[Any, ConfigReaderFailures, Has[HttpServerConfig]] =
+    ZIO
+      .fromEither(ConfigSource.default.at("http-server").load[HttpServerConfig])
+      .toLayer
 }
