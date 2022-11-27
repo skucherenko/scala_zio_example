@@ -50,23 +50,12 @@
 
 - Check for dependency updates (just in case)
 
-  - Uncomment `sbt-dependency-updates` in [`project/plugins.sbt`](project/plugins.sbt)
   - ```sh
     sbt dependencyUpdates
     ```
 ### Swagger-UI
 
-- Look to the stdout after you run the App, there will be link to documentation page like:
- `Go to http://localhost:${serverStart.port}/docs`
-
-### Metrics by Prometheus
-
-- A default endpoint has a default Prometheus configuration to collect metrics (prometheusMetrics, metricsEndpoint)
-- After you run the App you can take a look to the stdout where some metrics will be shown. For example:
-
-```
-Request: GET /docs/docs.yaml, handled by: GET /docs/docs.yaml, took: 1ms; response: 200
-```
+ Go to `http://localhost:8080/docs`
 
 ### Scalafix
 

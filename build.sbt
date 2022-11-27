@@ -2,9 +2,9 @@ import Dependencies._
 
 ThisBuild / organization := "org.organization"
 ThisBuild / scalaVersion := "2.13.10"
-ThisBuild / version := "0.0.1-SNAPSHOT"
+ThisBuild / version := "0.1.1-SNAPSHOT"
 
-lazy val scalaZioExample = (project in file("""scala-zio-example"""))
+lazy val scalaZioExample = (project in file("scala-zio-example"))
   .settings(
     settings
       ++ Seq(
@@ -12,8 +12,12 @@ lazy val scalaZioExample = (project in file("""scala-zio-example"""))
     )
   )
 
+lazy val scalaZioExampleRoot = project
+  .in(file("."))
+  .aggregate(scalaZioExample)
+
 lazy val settings = Seq(
-  libraryDependencies ++= commonDep ++ testDep ++ tapirCore ++ httpDep ++ dbDep,
+  libraryDependencies ++= commonDep ++ testDep ++ httpDep ++ dbDep,
   scalacOptions ++= Seq(
     "-deprecation",           // Emit warning and location for usages of deprecated APIs.
     "-encoding", "utf-8",     // Specify character encoding used by source files.
@@ -25,7 +29,7 @@ lazy val settings = Seq(
     "-unchecked",                     // Enable additional warnings where generated code depends on assumptions.
     "-Xlint:infer-any",               // Warn when a type argument is inferred to be `Any`.
     "-Xlint:missing-interpolator",    // A string literal appears to be missing an interpolator id.
-    "-Ywarn-dead-code",               // Warn when dead code is identified.
+//    "-Ywarn-dead-code",               // Warn when dead code is identified.
     "-Ywarn-unused:implicits",        // Warn if an implicit parameter is unused.
     "-Ywarn-unused:imports",          // Warn if an import selector is not referenced.
     "-Ywarn-unused:locals",           // Warn if a local definition is unused.
